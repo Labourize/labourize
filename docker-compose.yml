@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+
+  #############
+  ## Backend ##
+  #############
+  labourize-api:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+      target: labourize-api-dev
+    image: labourize-api
+    container_name: labourize-api
+    ports:
+      - "8000:3000"
+    volumes:
+      - ./apps/backend:/opt/app/apps/backend
+      - backend_node_modules:/opt/app/apps/backend/node_modules
+
+volumes:
+  backend_node_modules:
