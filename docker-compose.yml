@@ -13,9 +13,53 @@ services:
     container_name: labourize-api
     ports:
       - "8000:3000"
+    environment:
+      - PORT=8881
+      - POSTGRES_HOST=labourize-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=labourizeuser
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=labourizedb
+      - NODE_ENV=development
+    depends_on:
+      - labourize-db
     volumes:
       - ./apps/backend:/opt/app/apps/backend
       - backend_node_modules:/opt/app/apps/backend/node_modules
 
+    #############
+    ## DB ##
+    #############
+  labourize-db:
+    image: postgres:11-alpine
+    restart: always
+    container_name: labourize-db
+    volumes:
+      # TODO: Uncomment and setup multiple dbs once they will be need
+      # - ./dev-tools/scripts/db-management:/docker-entrypoint-initdb.d:delegated
+      - ./.postgres-cache:/var/lib/postgresql/data:delegated
+    environment:
+      # TODO: Uncomment and setup multiple dbs once they will be need
+      # POSTGRES_MULTIPLE_DATABASES: invnotifications,invpublicfeeds,invchatintegrations,invpricingmodels,invdataroom
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: labourizedb
+      POSTGRES_USER: labourizeuser
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+      - "5432"
+    ports:
+      - "5435:5432"
+
+ 
+  labourize-adminer:
+    image: adminer
+    container_name: labourize-adminer
+    restart: always
+    ports:
+      - 7889:8080
+
+
+
 volumes:
   backend_node_modules:
+  labourize-db:
