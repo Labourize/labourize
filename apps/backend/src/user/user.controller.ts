@@ -10,7 +10,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from './interfaces';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from './interfaces';
 import { UserService } from './services';
 
 @ApiTags('User')
@@ -24,6 +24,14 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.createUser(createUserDto);
+  }
+
+  @Post('/verify')
+  @ApiOperation({ summary: 'OTP verificatioin of a user' })
+  @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  async verifyUser(@Body() verifyUserDto: VerifyUserDto): Promise<UserResponseDto> {
+    return this.userService.verifyUser(verifyUserDto);
   }
 
   @Get()

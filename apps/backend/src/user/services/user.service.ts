@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from '../interfaces';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from '../interfaces';
 import { UserRepository } from '../domain';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -8,6 +9,7 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
+    
     if (userExists) {
       await this.updateUser(userExists.id, { phone: createUserDto.phone });
     }
@@ -35,6 +37,24 @@ export class UserService {
 
   async deleteUser(userId: string): Promise<void> {
     await this.userRepository.deleteUser(userId);
+  }
+
+  async verifyUser(verifyUserDto: VerifyUserDto): Promise<UserResponseDto> {
+    const user = await this.userRepository.findUserByPhone(verifyUserDto.phone);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // TODO: Note  this is only for testing purpose, need to remove of update on env
+    if (verifyUserDto.otp !== '000000') { 
+      return this.toUserResponseDto(user);
+    }
+
+    if (verifyUserDto.otp === user.otp) {
+      return this.toUserResponseDto(user);
+    }
+
+    return this.toUserResponseDto(user);
   }
 
   private toUserResponseDto(user: any): UserResponseDto {

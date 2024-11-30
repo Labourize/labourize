@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID, Length, MinLength, length } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -11,24 +11,6 @@ export class CreateUserDto {
   })
   @IsString()
   phone: string;
-
-  @ApiProperty({
-    description: 'The date when the user was created',
-    example: '2024-01-01T12:00:00Z',
-    type: String,
-    required: false,
-  })
-  @IsOptional()
-  createdAt?: string;
-
-  @ApiProperty({
-    description: 'The date when the user was last updated',
-    example: '2024-01-01T12:00:00Z',
-    type: String,
-    required: false,
-  })
-  @IsOptional()
-  updatedAt?: string;
 }
 
 
@@ -54,4 +36,17 @@ export class UserResponseDto {
   createdAt: Date;
 
   updatedAt: Date;
+}
+
+export class VerifyUserDto extends CreateUserDto {
+  @ApiProperty({
+    description: 'The OTP of the user',
+    example: '123456',
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  otp: string;
 }

@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class UserRepository {
@@ -13,7 +14,11 @@ export class UserRepository {
 
 
   async createUser(phone: string): Promise<UserEntity> {
-    const UserEntity = this.repository.create({ phone });
+    const UserEntity = this.repository.create({ 
+      phone,
+      otp: this.generateOTP(),
+      lastOtpSent: new Date()
+    });
     return this.repository.save(UserEntity);
   }
 
@@ -44,5 +49,10 @@ export class UserRepository {
       throw new Error('UserEntity not found');
     }
     await this.repository.remove(UserEntity);
+  }
+
+
+  private generateOTP(): string {
+    return (randomInt(100000, 999999)).toString();
   }
 }
