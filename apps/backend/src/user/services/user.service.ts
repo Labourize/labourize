@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from '../interfaces';
-import { UserRepository } from '../domain';
+import { UserEntity, UserRepository } from '../domain';
 import { randomInt } from 'crypto';
+import { JwtService } from '../../jwt/jwt.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService
+  ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
@@ -44,7 +48,7 @@ export class UserService {
     await this.userRepository.deleteUser(userId);
   }
 
-  async verifyUser(verifyUserDto: VerifyUserDto): Promise<UserResponseDto> {
+  async verifyUser(verifyUserDto: VerifyUserDto): Promise<string> {
     const user = await this.userRepository.findUserByPhone(verifyUserDto.phone);
     if (!user) {
       throw new Error('User not found');
@@ -52,14 +56,26 @@ export class UserService {
 
     // TODO: Note  this is only for testing purpose, need to remove of update on env
     if (verifyUserDto.otp !== '000000') { 
-      return this.toUserResponseDto(user);
+      return this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
     if (verifyUserDto.otp === user.otp) {
-      return this.toUserResponseDto(user);
+      return this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
-    return this.toUserResponseDto(user);
+    return '';
+  }
+
+  public async validateUserOtp(otp: string, userId: string): Promise<boolean> {
+    return this.userRepository.validateUserOtp(otp, userId);
+  }
+
+  public async getUserEntity(userId: string): Promise<UserEntity> {
+    const user = await this.userRepository.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
   }
 
   private toUserResponseDto(user: any): UserResponseDto {

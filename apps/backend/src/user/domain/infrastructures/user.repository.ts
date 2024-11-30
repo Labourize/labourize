@@ -56,6 +56,15 @@ export class UserRepository {
     return this.findUserById(UserEntityId);
   }
 
+  public async validateUserOtp(userId: string, otp: string): Promise<boolean> {
+    const user = await this.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user.otp === otp;
+  }
+
   private generateOTP(): string {
     return (randomInt(100000, 999999)).toString();
   }
