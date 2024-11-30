@@ -9,9 +9,9 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
-    
+
     if (userExists) {
-      await this.updateUser(userExists.id, { phone: createUserDto.phone });
+      return this.resendOtp(userExists.id);
     }
     const user = await this.userRepository.createUser(createUserDto.phone);
     return this.toUserResponseDto(user);
@@ -33,6 +33,11 @@ export class UserService {
   async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     const updatedUser = await this.userRepository.updateUser(userId, updateUserDto.phone);
     return this.toUserResponseDto(updatedUser);
+  }
+
+  async resendOtp(userId: string): Promise<UserResponseDto> {
+    const user = await this.userRepository.resendOtp(userId);
+    return this.toUserResponseDto(user);
   }
 
   async deleteUser(userId: string): Promise<void> {

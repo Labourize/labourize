@@ -51,6 +51,10 @@ export class UserRepository {
     await this.repository.remove(UserEntity);
   }
 
+  async resendOtp(UserEntityId: string): Promise<UserEntity> {
+    await this.repository.update(UserEntityId, { lastOtpSent: new Date(), otp: this.generateOTP() });
+    return this.findUserById(UserEntityId);
+  }
 
   private generateOTP(): string {
     return (randomInt(100000, 999999)).toString();
