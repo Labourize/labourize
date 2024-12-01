@@ -14,3 +14,4 @@ COPY ./ ./
 
 # RUN ["npm", "run", "start:debug"]
 CMD /bin/entrypoint.dev.sh
+
