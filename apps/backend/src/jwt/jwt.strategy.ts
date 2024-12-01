@@ -8,6 +8,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 // import { errorCodes } from '../errors/utils';
 import { UserService } from '../user/services';
 import { TRequestUser } from './interfaces';
+import * as fs from 'fs';
 
 export interface IUserPayload {
   iat: number;
@@ -36,8 +37,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // eslint-disable-next-line
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: config.get<string>('jwt.public')
+      ignoreExpiration: true,
+      secretOrKey: fs.readFileSync(config.get<string>('jwt.public'), 'utf8')//config.get<string>('jwt.public')
     });
   }
 
@@ -52,7 +53,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       //     code: errorCodes.AUTHORIZATION_JWT_TOKEN_REVOKED
       //   });
       // }
-
+      
       const isValid = await this.userService.validateUserOtp(payload.userId, payload.otp)
       if (!isValid) {
         throw new Error('Invalid otp');

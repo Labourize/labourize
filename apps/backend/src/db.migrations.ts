@@ -10,9 +10,7 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(DBMigrationsModule);
 
-    const config = app.get(ConfigService);
-    console.log(config);
-    
+    const config = app.get(ConfigService);    
 
     const connection = new DataSource(migrationDataSourceOptions(config));
 

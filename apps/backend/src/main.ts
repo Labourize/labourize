@@ -8,12 +8,12 @@ async function bootstrap() {
   app.enableCors();
   // Swagger setup
   const config = new DocumentBuilder()
+  .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT')
   .setTitle('Labourize API')
   .setDescription('API documentation for the Labourize application')
   .setVersion('1.0')
   .addTag('Auth')
   .addTag('User')
-  .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT')
   .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document, {

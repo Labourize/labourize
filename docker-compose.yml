@@ -21,6 +21,10 @@ services:
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=labourizedb
       - NODE_ENV=development
+      - ENABLE_SWAGGER=true
+      - JWT_PUBLIC=./secrets/jwt-private.key
+      - JWT_SECRET=./secrets/jwt-private.key
+      - JWT_TTL=28800
     depends_on:
       - labourize-db
     volumes:

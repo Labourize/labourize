@@ -55,18 +55,23 @@ export class UserService {
     }
 
     // TODO: Note  this is only for testing purpose, need to remove of update on env
-    if (verifyUserDto.otp !== '000000') { 
-      return this.jwtService.generateToken({userId: user.id, otp: user.otp});
+    if (verifyUserDto.otp === '000000') { 
+      return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
     if (verifyUserDto.otp === user.otp) {
-      return this.jwtService.generateToken({userId: user.id, otp: user.otp});
+      return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
     return '';
   }
 
   public async validateUserOtp(otp: string, userId: string): Promise<boolean> {
+    
+    // TODO: Note  this is only for testing purpose, need to remove of update on env
+    if (otp === '000000') {
+      return true;
+    }
     return this.userRepository.validateUserOtp(otp, userId);
   }
 

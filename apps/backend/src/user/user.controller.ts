@@ -8,10 +8,12 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from './interfaces';
 import { UserService } from './services';
+import { JwtAuthGuard } from 'src/jwt/jwt.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -30,10 +32,12 @@ export class UserController {
   @ApiOperation({ summary: 'OTP verificatioin of a user' })
   @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  async verifyUser(@Body() verifyUserDto: VerifyUserDto): Promise<UserResponseDto> {
+  async verifyUser(@Body() verifyUserDto: VerifyUserDto): Promise<string> {
     return this.userService.verifyUser(verifyUserDto);
   }
 
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiResponse({ status: 200, description: 'List of all users', type: [UserResponseDto] })
@@ -41,6 +45,8 @@ export class UserController {
     return this.userService.findAllUsers();
   }
 
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a user by ID' })
   @ApiParam({ name: 'id', description: 'UUID of the user', example: 'b3b8f887-79b8-4f8d-b1e4-8b8b87b7e8e7' })
@@ -54,6 +60,8 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', description: 'UUID of the user', example: 'b3b8f887-79b8-4f8d-b1e4-8b8b87b7e8e7' })
@@ -71,6 +79,8 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiParam({ name: 'id', description: 'UUID of the user', example: 'b3b8f887-79b8-4f8d-b1e4-8b8b87b7e8e7' })

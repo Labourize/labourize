@@ -13,6 +13,12 @@ export default () => {
           apiKey: process.env.API_KEY,
           contractAddress: process.env.CONTRACT_ADDRESS,
           privateKey: process.env.PRIVATE_KEY
+      },
+      jwt: {
+        public: process.env.JWT_PUBLIC || 'Jwt Public default',
+        secret: process.env.JWT_SECRET || 'Jwt Secret default',
+        algorithm: process.env.JWT_ALGORITHM || 'RS256',
+        ttl: ((process.env.JWT_TTL as unknown) as number) || 28800
       }
   }
 }

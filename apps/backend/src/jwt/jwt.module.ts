@@ -7,12 +7,15 @@ import { JwtAuthGuard } from './jwt.guard';
 import { JwtService } from './jwt.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../user/user.module';
+import * as fs from 'fs';
+
 
 @Module({
   imports: [
     JwtAuthModule.registerAsync({
       useFactory: (config: ConfigService) => ({
-        publicKey: config.get('jwt.public')
+        privateKey: fs.readFileSync(config.get('jwt.secret'), 'utf8'),
+        publicKey: fs.readFileSync(config.get('jwt.public'), 'utf8')
       }),
       inject: [ConfigService]
     }),

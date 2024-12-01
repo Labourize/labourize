@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
+import * as fs from 'fs';
 
 import { TJwtTokenPayload } from './interfaces';
 
@@ -8,12 +9,12 @@ import { TJwtTokenPayload } from './interfaces';
 export class JwtService {
   constructor(private config: ConfigService) {}
 
-  public generateToken(payload: TJwtTokenPayload): string {
+  public generateToken(payload: TJwtTokenPayload): string {    
     return jwt.sign(
       {
         ...payload
       },
-      this.config.get('jwt.secret'),
+      fs.readFileSync(this.config.get('jwt.secret'), 'utf8'),
       {
         algorithm: this.config.get('jwt.algorithm'),
         expiresIn: +this.config.get('jwt.ttl')
@@ -21,8 +22,12 @@ export class JwtService {
     );
   }
 
-  public isValid(token: string): unknown {
-    return jwt.verify(token, this.config.get('jwt.public'), { algorithms: [this.config.get('algorithm')] });
+  public isValid(token: string): unknown {    
+    return jwt.verify(
+      token,
+      fs.readFileSync(this.config.get('jwt.public'), 'utf8'),
+      { algorithms: [this.config.get('algorithm')]
+    });
   }
 
   public decode(idToken: string): unknown {
