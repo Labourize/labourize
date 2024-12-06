@@ -8,7 +8,8 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
-      target: labourize-api-dev
+      # target: labourize-api-dev
+      target: labourize-api-prod
     image: labourize-api
     container_name: labourize-api
     ports:
