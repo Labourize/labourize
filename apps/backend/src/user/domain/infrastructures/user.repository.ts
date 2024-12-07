@@ -13,9 +13,10 @@ export class UserRepository {
   ) {}
 
 
-  async createUser(phone: string): Promise<UserEntity> {
+  async createUser(phone: string, deviceId: string): Promise<UserEntity> {
     const UserEntity = this.repository.create({ 
       phone,
+      deviceId,
       otp: this.generateOTP(),
       lastOtpSent: new Date()
     });
@@ -54,6 +55,10 @@ export class UserRepository {
   async resendOtp(UserEntityId: string): Promise<UserEntity> {
     await this.repository.update(UserEntityId, { lastOtpSent: new Date(), otp: this.generateOTP() });
     return this.findUserById(UserEntityId);
+  }
+
+  public async findUserByDeviceId(deviceId: string): Promise<UserEntity> {
+    return this.repository.findOne({ where: { deviceId } });
   }
 
   public async validateUserOtp(userId: string, otp: string): Promise<boolean> {

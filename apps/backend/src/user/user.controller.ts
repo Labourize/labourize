@@ -10,8 +10,8 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from './interfaces';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { CreateUserDto, UpdateUserDto, UserDeviceIdDto, UserResponseDto, VerifyUserDto } from './interfaces';
 import { UserService } from './services';
 import { JwtAuthGuard } from 'src/jwt/jwt.guard';
 
@@ -19,6 +19,20 @@ import { JwtAuthGuard } from 'src/jwt/jwt.guard';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('/:deviceId')
+  @ApiOperation({ summary: 'Check by deviceId' })
+  @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @ApiParam({
+    name: 'deviceId',
+    type: String,
+    description: 'The unique device ID of the user',
+    example: 'abc12345',
+  })
+  async getUserByDeviceId(@Param() deviceIdDto: UserDeviceIdDto): Promise<UserResponseDto | string> {
+    return this.userService.checkUserByDeviceId(deviceIdDto);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -38,7 +52,7 @@ export class UserController {
 
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/all')
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiResponse({ status: 200, description: 'List of all users', type: [UserResponseDto] })
   async getAllUsers(): Promise<UserResponseDto[]> {

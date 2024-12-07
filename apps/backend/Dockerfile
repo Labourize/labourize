@@ -41,18 +41,29 @@ WORKDIR /backend
 
 COPY ./package.json ./
 
-CMD [ "pwd" ]
+RUN npm i -g @nestjs/cli
+
 # COPY /opt/app/yarn.lock ./
 RUN set -x && \
-  yarn install --pure-lockfile
+  yarn install --pure-lockfile --production
 
 # COPY ./dist ./dist
 COPY ./secrets ./secrets
 
+COPY ./tsconfig.json ./tsconfig.build.json ./
+
+COPY ./src ./src
+
+RUN set -x && \
+  npm run build
+
+
 # Copy the entrypoint script and make it executable
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-COPY --from=labourize-api-builder /opt/app/apps/backend/dist/ ./src
+COPY ./dist/ ./dist
+#COPY --from=labourize-api-builder /opt/app/apps/backend/dist/ ./src
 # COPY ./ ./
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
+

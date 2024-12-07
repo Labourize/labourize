@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto, UserResponseDto, VerifyUserDto } from '../interfaces';
+import { CreateUserDto, UpdateUserDto, UserDeviceIdDto, UserResponseDto, VerifyUserDto } from '../interfaces';
 import { UserEntity, UserRepository } from '../domain';
 import { randomInt } from 'crypto';
 import { JwtService } from '../../jwt/jwt.service';
@@ -15,9 +15,20 @@ export class UserService {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
 
     if (userExists) {
+      if (userExists.deviceId !== createUserDto.deviceId) {
+        await this.updateUser(userExists.id, { phone: createUserDto.phone, deviceId: createUserDto.deviceId });
+      }
       return this.resendOtp(userExists.id);
     }
-    const user = await this.userRepository.createUser(createUserDto.phone);
+    const user = await this.userRepository.createUser(createUserDto.phone, createUserDto.deviceId);
+    return this.toUserResponseDto(user);
+  }
+
+  public async checkUserByDeviceId(deviceIdDto: UserDeviceIdDto): Promise<UserResponseDto | string> {
+    const user = await this.userRepository.findUserByDeviceId(deviceIdDto.deviceId);
+    if (!user) {
+      return 'User not found';
+    }
     return this.toUserResponseDto(user);
   }
 
@@ -87,6 +98,7 @@ export class UserService {
     return {
       userId: user.id,
       phone: user.phone,
+      deviceId: user.deviceId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

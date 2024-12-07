@@ -14,6 +14,9 @@ export class UserEntity {
   @Column({ type: 'timestamp', nullable: true })
   lastOtpSent: Date; // Timestamp of when the last OTP was sent
 
+  @Column({ type: 'varchar', nullable: true })
+  deviceId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
