@@ -19,6 +19,18 @@ export default () => {
         secret: process.env.JWT_SECRET || 'Jwt Secret default',
         algorithm: process.env.JWT_ALGORITHM || 'RS256',
         ttl: ((process.env.JWT_TTL as unknown) as number) || 28800
+      },
+      aws: {
+        endpoint: process.env.endpoint || '',
+        accessKeyId: process.env.AWSAccessKeyId || '',
+        secretAccessKey: process.env.AWSsecretAccessKey || ''
+      },
+      sms: {
+        provider: process.env.SMS_PROVIDER || 'aws',
+      },
+      twilio: {
+        accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+        authToken: process.env.TWILIO_AUTH_TOKEN || '',
       }
   }
 }

@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString, IsUUID, Length, MinLength, length } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import e from 'express';
 
 export class UserDeviceIdDto {
   @ApiProperty({

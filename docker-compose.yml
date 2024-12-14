@@ -8,8 +8,8 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
-      # target: labourize-api-dev
-      target: labourize-api-prod
+      target: labourize-api-dev
+      # target: labourize-api-prod
     image: labourize-api
     container_name: labourize-api
     ports:
@@ -23,6 +23,12 @@ services:
       - POSTGRES_DB=labourizedb
       - NODE_ENV=development
       - ENABLE_SWAGGER=true
+      - SMS_PROVIDER=AWS
+      - AWSAccessKeyId=
+      - AWSsecretAccessKey=
+      - TWILIO_ACCOUNT_SID=
+      - TWILIO_AUTH_TOKEN=
+      #- SMS_PROVIDER=Twillio
       - JWT_PUBLIC=./secrets/jwt-private.key
       - JWT_SECRET=./secrets/jwt-private.key
       - JWT_TTL=28800
@@ -54,7 +60,6 @@ services:
       - "5432"
     ports:
       - "5435:5432"
-
  
   labourize-adminer:
     image: adminer
@@ -62,8 +67,6 @@ services:
     restart: always
     ports:
       - 7889:8080
-
-
 
 volumes:
   backend_node_modules:

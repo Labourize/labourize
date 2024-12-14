@@ -30,16 +30,16 @@ export class UserController {
     description: 'The unique device ID of the user',
     example: 'abc12345',
   })
-  async getUserByDeviceId(@Param() deviceIdDto: UserDeviceIdDto): Promise<UserResponseDto | string> {
-    return this.userService.checkUserByDeviceId(deviceIdDto);
+  async getUserByDeviceId(@Param() deviceIdDto: UserDeviceIdDto) {
+    return this.successResponse(await this.userService.checkUserByDeviceId(deviceIdDto), '');
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return this.userService.createUser(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return this.successResponse(await this.userService.createUser(createUserDto), 'User created successfully');
   }
 
   @Post('/verify')
@@ -108,4 +108,6 @@ export class UserController {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
   }
+
+  successResponse = (data: any, message: string) => ({ data, message });
 }

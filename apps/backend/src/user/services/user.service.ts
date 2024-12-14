@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UserDeviceIdDto, UserResponseDto, VerifyUserDto } from '../interfaces';
 import { UserEntity, UserRepository } from '../domain';
 import { randomInt } from 'crypto';
 import { JwtService } from '../../jwt/jwt.service';
+import { OTPService } from './otp.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly otpService: OTPService
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -18,16 +20,18 @@ export class UserService {
       if (userExists.deviceId !== createUserDto.deviceId) {
         await this.updateUser(userExists.id, { phone: createUserDto.phone, deviceId: createUserDto.deviceId });
       }
+      await this.otpService.publishSmsMessage(userExists.phone, userExists.otp);
       return this.resendOtp(userExists.id);
     }
     const user = await this.userRepository.createUser(createUserDto.phone, createUserDto.deviceId);
+    await this.otpService.publishSmsMessage(user.phone, user.otp);
     return this.toUserResponseDto(user);
   }
 
   public async checkUserByDeviceId(deviceIdDto: UserDeviceIdDto): Promise<UserResponseDto | string> {
     const user = await this.userRepository.findUserByDeviceId(deviceIdDto.deviceId);
     if (!user) {
-      return 'User not found';
+      throw new NotFoundException('User not found');
     }
     return this.toUserResponseDto(user);
   }
@@ -40,7 +44,7 @@ export class UserService {
   async findUserById(userId: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findUserById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     return this.toUserResponseDto(user);
   }
