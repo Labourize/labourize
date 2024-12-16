@@ -15,7 +15,7 @@ export class OTPService {
   public async publishSmsMessage(phone: string, otp: string): Promise<void> {
     const provider = this.configservice.get('sms.provider');
 
-    if (provider === 'twilio') {
+    if (provider === 'aws') {
      await this.awsProvider.publishSmsMessage(phone, otp);
     }
     else if (provider === 'twilio') {
