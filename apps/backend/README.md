@@ -24,7 +24,11 @@ sudo apt install docker-ce -y
 
 #sudo systemctl status docker
 
+sudo usermod -aG docker ${USER}
+
 sudo su - ${USER}
+
+groups
 
 ### install docker compose
 mkdir -p ~/.docker/cli-plugins/

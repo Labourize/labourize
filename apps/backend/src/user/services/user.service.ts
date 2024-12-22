@@ -70,11 +70,13 @@ export class UserService {
     }
 
     // TODO: Note  this is only for testing purpose, need to remove of update on env
-    if (verifyUserDto.otp === '000000') { 
+    if (verifyUserDto.otp === '000000') {
+      this.userRepository.resetLoggout(user.id);
       return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
     if (verifyUserDto.otp === user.otp) {
+      this.userRepository.resetLoggout(user.id);
       return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
@@ -98,13 +100,27 @@ export class UserService {
     return user;
   }
 
-  private toUserResponseDto(user: any): UserResponseDto {
+  public async userLogout(userId: string): Promise<string> {
+    try {
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      await this.userRepository.patchUserLoggedOut(userId);
+      return 'Logged out successfully';
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  private toUserResponseDto(user: UserEntity): UserResponseDto {    
     return {
       userId: user.id,
       phone: user.phone,
       deviceId: user.deviceId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      isLoggedOut: +user?.loggedOut !== 0
     };
   }
 }

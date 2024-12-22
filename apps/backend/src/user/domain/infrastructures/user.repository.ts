@@ -70,6 +70,14 @@ export class UserRepository {
     return user.otp === otp;
   }
 
+  public async patchUserLoggedOut(userId: string): Promise<void> {
+    await this.repository.update(userId, { loggedOut: Math.floor(new Date().valueOf() / 1000) })
+  }
+
+  public async resetLoggout(userId) {
+    await this.repository.update(userId, { loggedOut: 0 });
+  }
+
   private generateOTP(): string {
     return (randomInt(100000, 999999)).toString();
   }

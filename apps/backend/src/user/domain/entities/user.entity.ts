@@ -17,6 +17,11 @@ export class UserEntity {
   @Column({ type: 'varchar', nullable: true })
   deviceId: string;
 
+  @Column('bigint', {
+    nullable: true
+  })
+  public loggedOut: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -10,12 +10,14 @@ import { map } from 'rxjs/operators';
 export class ApiResponseInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler<T>) {
     return next.handle().pipe(
-      map((data) => ({
-        status: 'Success',
-        code: context.switchToHttp().getResponse().statusCode,
-        data: data || null,
-        message: '',
-      })),
+      map((responseObj) => (
+        {
+          status: 'Success',
+          code: context.switchToHttp().getResponse().statusCode,
+          data: responseObj['data'] ? responseObj['data'] : responseObj || null,
+          message: responseObj['message'] ? responseObj['message'] : ''
+        }
+      )),
     );
   }
 }

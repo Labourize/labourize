@@ -31,7 +31,7 @@ export class UserController {
     example: 'abc12345',
   })
   async getUserByDeviceId(@Param() deviceIdDto: UserDeviceIdDto) {
-    return this.successResponse(await this.userService.checkUserByDeviceId(deviceIdDto), '');
+    return this.userService.checkUserByDeviceId(deviceIdDto);
   }
 
   @Post()
@@ -107,6 +107,20 @@ export class UserController {
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+  }
+
+  @Get('/:userId/logout')
+  @ApiOperation({ summary: 'Logged out user' })
+  @ApiResponse({ status: 200, description: 'User logged out successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @ApiParam({
+    name: 'userId',
+    type: String,
+    description: 'The unique user ID of the user',
+    example: '5a460d56-6080-4302-bc74-7cb5bf1a4faf',
+  })
+  async loggedOutUser(@Param('userId') userId: string) {
+    return this.successResponse(this.userService.userLogout(userId), 'User logged out successfully');
   }
 
   successResponse = (data: any, message: string) => ({ data, message });

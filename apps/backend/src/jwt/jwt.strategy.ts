@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -46,13 +46,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   public async validate(payload: TJwtPayload): Promise<TRequestUser> {
       const user = await this.userService.getUserEntity(payload.userId);
 
-      // const isLoggedOut = +user.loggedOut > +payload.iat;
+      const isLoggedOut = +user.loggedOut > +payload.iat;
 
-      // if (isLoggedOut) {
-      //   throw new AuthorizationError({
-      //     code: errorCodes.AUTHORIZATION_JWT_TOKEN_REVOKED
-      //   });
-      // }
+      if (isLoggedOut) {
+        throw new UnauthorizedException({
+          code: 'AUTHORIZATION_NOT_AUTHORIZED',
+          message: 'User is logged out'
+        });
+      }
       
       const isValid = await this.userService.validateUserOtp(payload.userId, payload.otp)
       if (!isValid) {

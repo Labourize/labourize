@@ -44,6 +44,7 @@ export class UserResponseDto {
   phone: string;
   deviceId: string;
   createdAt: Date;
+  isLoggedOut: boolean;
   updatedAt: Date;
 }
 
