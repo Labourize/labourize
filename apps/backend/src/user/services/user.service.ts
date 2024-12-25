@@ -17,7 +17,7 @@ export class UserService {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
 
     if (userExists) {
-      await this.userRepository.resetLoggout(user.id);
+      await this.userRepository.resetLoggout(userExists.id);
       if (userExists.deviceId !== createUserDto.deviceId) {
         await this.updateUser(userExists.id, { phone: createUserDto.phone, deviceId: createUserDto.deviceId });
       }
