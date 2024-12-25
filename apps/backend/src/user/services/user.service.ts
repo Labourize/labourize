@@ -17,6 +17,7 @@ export class UserService {
     const userExists = await this.userRepository.findUserByPhone(createUserDto.phone);
 
     if (userExists) {
+      await this.userRepository.resetLoggout(user.id);
       if (userExists.deviceId !== createUserDto.deviceId) {
         await this.updateUser(userExists.id, { phone: createUserDto.phone, deviceId: createUserDto.deviceId });
       }
@@ -71,7 +72,7 @@ export class UserService {
 
     // TODO: Note  this is only for testing purpose, need to remove of update on env
     if (verifyUserDto.otp === '000000') {
-      this.userRepository.resetLoggout(user.id);
+      await this.userRepository.resetLoggout(user.id);
       return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
@@ -120,7 +121,7 @@ export class UserService {
       deviceId: user.deviceId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      isLoggedOut: +user?.loggedOut !== 0
+      isLoggedOut: +user?.loggedOut != 0
     };
   }
 }
