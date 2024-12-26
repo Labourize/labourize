@@ -32,7 +32,7 @@ export class UserService {
   public async checkUserByDeviceId(deviceIdDto: UserDeviceIdDto): Promise<UserResponseDto | string> {
     const user = await this.userRepository.findUserByDeviceId(deviceIdDto.deviceId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      return '';
     }
     return this.toUserResponseDto(user);
   }
