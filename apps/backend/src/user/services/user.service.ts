@@ -105,7 +105,7 @@ export class UserService {
     try {
       const user = await this.userRepository.findUserById(userId);
       if (!user) {
-        throw new Error('User not found');
+        return 'User not found';
       }
       await this.userRepository.patchUserLoggedOut(userId);
       return 'Logged out successfully';
