@@ -77,7 +77,7 @@ export class UserService {
     }
 
     if (verifyUserDto.otp === user.otp) {
-      this.userRepository.resetLoggout(user.id);
+      await this.userRepository.resetLoggout(user.id);
       return await this.jwtService.generateToken({userId: user.id, otp: user.otp});
     }
 
