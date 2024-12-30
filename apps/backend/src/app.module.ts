@@ -6,13 +6,15 @@ import environment from './config/environment';
 import { ConfigDatabaseModule } from './config/modules';
 import { UserModule } from './user/user.module';
 import { JwtModule } from './jwt/jwt.module';
+import { EnquiriesModule } from './enquiries/enquiries.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [ environment ]}),
     ConfigDatabaseModule,
     UserModule,
-    JwtModule
+    JwtModule,
+    EnquiriesModule
   ],
   controllers: [AppController],
   providers: [AppService],
