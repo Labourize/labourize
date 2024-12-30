@@ -8,10 +8,10 @@ export class CreateEnquiryDto {
   @MaxLength(255)
   name: string;
 
-  @ApiProperty({ description: 'Phone number of the user', maxLength: 15 })
+  @ApiProperty({ description: 'Phone number of the user', maxLength: 10 })
   @IsNotEmpty()
   @IsString()
-  @MaxLength(15)
+  @MaxLength(10)
   phone: string;
 
   @ApiProperty({ description: 'Email of the user', maxLength: 255 })
